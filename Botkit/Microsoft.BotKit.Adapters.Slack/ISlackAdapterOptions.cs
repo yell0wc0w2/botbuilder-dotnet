@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Microsoft.BotKit.Adapters.Slack
 {
     /// <summary>
-    /// Interface for define implementation of the SlackAdapter Options.
+    /// Interface for defining implementation of the SlackAdapter Options.
     /// </summary>
     public interface ISlackAdapterOptions
     {

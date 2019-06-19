@@ -10,7 +10,6 @@ namespace Microsoft.BotKit.Adapters.Slack
     /// </summary>
     public class DialogData
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogData"/> class.
         /// </summary>
