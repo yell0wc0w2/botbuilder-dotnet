@@ -1,0 +1,29 @@
+{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "You said '${turn.activity.text}'"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnEndOfActions",
+            "condition": "!turn.isTrue",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "In end of actions"
+                },
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "turn.isTrue",
+                    "value": "=true"
+                }
+            ]
+        }
+    ]
+}
