@@ -250,13 +250,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = templates.Evaluate("wPhrase", null);
-            Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
+            Assert.AreEqual(evaled, "Hi \r\n\t\\");
 
             evaled = templates.Evaluate("AtEscapeChar", null);
-            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1} ");
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
 
             evaled = templates.Evaluate("otherEscape", null);
-            Assert.AreEqual(evaled, "Hi y ");
+            Assert.AreEqual(evaled, @"Hi \y \");
 
             evaled = templates.Evaluate("escapeInExpression", null);
             Assert.AreEqual(evaled, "Hi hello\\\\");
@@ -282,6 +282,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             
             evaled = templates.Evaluate("showTodo", null);
             Assert.AreEqual(((string)evaled).Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+
+            evaled = templates.Evaluate("getUserName", null);
+            Assert.AreEqual(evaled, "super \"x man\"");
+
+            evaled = templates.Evaluate("structure1", null);
+            Assert.AreEqual(evaled.ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+
+            evaled = templates.Evaluate("nestedSample", null);
+            Assert.AreEqual(evaled.ToString(), "i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"");
+
+            evaled = templates.Evaluate("dollarsymbol");
+            Assert.AreEqual("$ $ ${'hi'} hi", evaled);
         }
 
         [TestMethod]
@@ -1004,7 +1016,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             { 
                 if (func == "custom")
                 {
-                    return ExpressionFunctions.Numeric("custom", (args) => args[0] + args[1]);
+                    return ExpressionFunctions.Numeric("custom", (args) => (int)args[0] + (int)args[1]);
                 }
                 else
                 {

@@ -12,6 +12,8 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Newtonsoft.Json.Linq;
 
+[assembly: CLSCompliant(false)]
+
 namespace AdaptiveExpressions
 {
     /// <summary>
@@ -69,6 +71,7 @@ namespace AdaptiveExpressions
 
         private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
         {
+            private readonly Regex escapeRegex = new Regex(@"\\[^\r\n]?");
             private readonly EvaluatorLookup _lookupFunction;
 
             public ExpressionTransformer(EvaluatorLookup lookup)
@@ -172,18 +175,29 @@ namespace AdaptiveExpressions
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionAntlrParser.ParenthesisExpContext context) => Visit(context.expression());
 
+            public override Expression VisitArrayCreationExp([NotNull] ExpressionAntlrParser.ArrayCreationExpContext context)
+            {
+                var parameters = ProcessArgsList(context.argsList()).ToList();
+                return MakeExpression(ExpressionType.CreateArray, parameters.ToArray());
+            }
+
             public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
             {
                 var text = context.GetText();
-                if (text.StartsWith("'"))
+                if (text.StartsWith("'") && text.EndsWith("'"))
                 {
-                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('\'')));
+                    text = text.Substring(1, text.Length - 2).Replace("\\'", "'");
+                }
+                else if (text.StartsWith("\"") && text.EndsWith("\""))
+                {
+                    text = text.Substring(1, text.Length - 2).Replace("\\\"", "\"");
                 }
                 else
                 {
-                    // start with "
-                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
+                    throw new Exception($"Invalid string {text}");
                 }
+
+                return Expression.ConstantExpression(EvalEscape(text));
             }
 
             public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
@@ -200,7 +214,7 @@ namespace AdaptiveExpressions
                                 children.Add(Expression.Parse(expressionString, _lookupFunction));
                                 break;
                             case ExpressionAntlrParser.ESCAPE_CHARACTER:
-                                children.Add(Expression.ConstantExpression(EvalEscape(node.GetText())));
+                                children.Add(Expression.ConstantExpression(EvalEscape(node.GetText().Replace("\\`", "`").Replace("\\$", "$"))));
                                 break;
                             default:
                                 break;
@@ -208,7 +222,9 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        children.Add(Expression.ConstantExpression(child.GetText()));
+                        // text content
+                        var text = EvalEscape(child.GetText());
+                        children.Add(Expression.ConstantExpression(text));
                     }
                 }
 
@@ -245,15 +261,24 @@ namespace AdaptiveExpressions
                 }
             }
 
-            private string EvalEscape(string exp)
+            private string EvalEscape(string text)
             {
-                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-                if (commonEscapes.Contains(exp))
+                if (text == null)
                 {
-                    return Regex.Unescape(exp);
+                    return string.Empty;
                 }
 
-                return exp.Substring(1);
+                return escapeRegex.Replace(text, new MatchEvaluator(m =>
+                {
+                    var value = m.Value;
+                    var commonEscapes = new List<string>() { "\\r", "\\n", "\\t", "\\\\" };
+                    if (commonEscapes.Contains(value))
+                    {
+                        return Regex.Unescape(value);
+                    }
+
+                    return value;
+                }));
             }
 
             private string TrimExpression(string expression)
