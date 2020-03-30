@@ -397,21 +397,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    Expression expression = ExpressionParser.Parse(exp);
-
-                    //if (!Expressions.ContainsKey(exp))
-                    //{
-                    //    expression = ExpressionParser.Parse(exp);
-                    //    Expressions.Add(exp, expression);
-                    //}
-                    //else
-                    //{
-                    //    expression = Expressions[exp];
-                    //}
-
                     if (templates.Id != "inline content")
                     {
+                        Expression expression;
+
+                        if (!Expressions.ContainsKey(exp))
+                        {
+                            expression = ExpressionParser.Parse(exp);
+                            Expressions.Add(exp, expression);
+                        }
+                        else
+                        {
+                            expression = Expressions[exp];
+                        }
+
                         DebugSupport.SourceMap.Add(expression, new SourceRange(templates.Id, context.Start.Line, 0, context.Start.Line + 1, 0));
+                    }
+                    else
+                    {
+                        Expression expression = ExpressionParser.Parse(exp);
                     }
                 }
                 catch (Exception e)
