@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// <summary>
     /// ILanguageGenerator implementation which uses LGFile. 
     /// </summary>
-    public class TemplateEngineLanguageGenerator : ILanguageGenerator
+    public class TemplateEngineLanguageGenerator : LanguageGenerator
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>generated text.</returns>
-        public async Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             EventHandler onEvent = (object sender, EventArgs e) =>
             {

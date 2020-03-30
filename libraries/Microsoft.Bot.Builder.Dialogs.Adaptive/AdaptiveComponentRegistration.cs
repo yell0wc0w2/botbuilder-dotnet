@@ -23,7 +23,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers, IComponentExpressionFunctions
+    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
     {
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
         {
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
             yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
-            yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
+            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, paths);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
@@ -197,11 +197,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new AtAtPathResolver();
             yield return new AtPathResolver();
             yield return new PercentPathResolver();
-        }
-
-        public IEnumerable<ExpressionEvaluator> GetExpressionEvaluators()
-        {
-            yield break;
         }
     }
 }

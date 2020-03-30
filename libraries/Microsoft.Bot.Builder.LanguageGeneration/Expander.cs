@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!(scope is CustomizedMemory))
             {
-                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+                scope = new CustomizedMemory(scope);
             }
 
             if (!TemplateMap.ContainsKey(templateName))
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Replace(@"\|", "|").Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
