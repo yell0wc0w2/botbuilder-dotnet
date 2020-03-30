@@ -450,6 +450,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
+            EmitEvent(parse, new BeginExpressionEvaluationArgs { Source = TemplateMap[CurrentTarget().TemplateName].Source, Expression = exp });
             return parse.TryEvaluate(scope);
         }
 

@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "json",
+            "type": "bot",
             "request": "attach",
-            "name": "Attach to Dialog",
+            "name": "Attach to Bot",
             "debugServer": 4712
         }
     ]

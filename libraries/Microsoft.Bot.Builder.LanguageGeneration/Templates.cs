@@ -188,6 +188,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
+        /// <param name="onEvent">An event handler that handles the emited events in the evaluation processs.</param>
         /// <returns>Evaluate result.</returns>
         public object EvaluateText(string text, object scope = null, EventHandler onEvent = null)
         {

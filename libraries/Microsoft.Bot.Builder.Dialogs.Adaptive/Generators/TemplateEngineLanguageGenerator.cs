@@ -97,6 +97,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
+                else if (e is BeginExpressionEvaluationArgs expr && expr.Source != "inline content")
+                {
+                    Console.WriteLine($"Running expression {expr.Expression} in {expr.Source}");
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
+                    task.Wait();
+                }
             };
 
             try

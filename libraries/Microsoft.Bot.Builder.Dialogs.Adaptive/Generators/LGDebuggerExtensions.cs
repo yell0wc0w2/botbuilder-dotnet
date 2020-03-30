@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs.Debugging;
+﻿using System.IO;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
 using LGTemplates = Microsoft.Bot.Builder.LanguageGeneration.Templates;
 
@@ -18,7 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var endChar = t.ParseTree.Stop.Column;
                 var path = templates.Id;
 
-                DebugSupport.SourceMap.Add(key, new SourceRange(path, startLine, startChar, endLine, endChar));
+                if (!Path.IsPathRooted(path))
+                {
+                    DebugSupport.SourceMap.Add(key, new SourceRange(path, startLine, startChar, endLine, endChar));
+                }
             }
         }
     }

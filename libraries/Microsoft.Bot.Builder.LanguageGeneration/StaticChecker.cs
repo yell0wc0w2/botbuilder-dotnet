@@ -3,10 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -18,7 +21,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly ExpressionParser baseExpressionParser;
         private readonly Templates templates;
         private IList<string> visitedTemplateNames;
-
         private IExpressionParser _expressionParser;
 
         /// <summary>
@@ -391,7 +393,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    ExpressionParser.Parse(exp);
+                    var expression = ExpressionParser.Parse(exp);
+
+                    if (!Path.IsPathRooted(templates.Id))
+                    {
+                        DebugSupport.SourceMap.Add(expression, new SourceRange(templates.Id, context.Start.Line, context.Start.Column, context.Stop.Line, context.Stop.Column));
+                    }
                 }
                 catch (Exception e)
                 {
