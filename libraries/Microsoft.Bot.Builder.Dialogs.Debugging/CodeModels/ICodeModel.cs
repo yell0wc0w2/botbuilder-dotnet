@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -43,6 +44,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             if (item is Template template)
             {
                 return $"template '{template.Name}'";
+            }
+
+            if (item is Constant || item is Expression)
+            {
+                return item.ToString();
             }
 
             var type = item.GetType().Name;

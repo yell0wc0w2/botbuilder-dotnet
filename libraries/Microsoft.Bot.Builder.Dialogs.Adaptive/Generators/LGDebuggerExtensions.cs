@@ -19,10 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var endChar = t.ParseTree.Stop.Column;
                 var path = templates.Id;
 
-                if (!Path.IsPathRooted(path))
-                {
-                    DebugSupport.SourceMap.Add(key, new SourceRange(path, startLine, startChar, endLine, endChar));
-                }
+                DebugSupport.SourceMap.Add(key, new SourceRange(path, startLine, startChar, startLine + 1, endChar));
             }
         }
     }

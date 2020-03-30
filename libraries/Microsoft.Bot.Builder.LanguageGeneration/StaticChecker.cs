@@ -18,6 +18,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
+#pragma warning disable SA1401 // Fields should be private
+        public static Dictionary<string, Expression> Expressions = new Dictionary<string, Expression>();
+#pragma warning restore SA1401 // Fields should be private
+
         private readonly ExpressionParser baseExpressionParser;
         private readonly Templates templates;
         private IList<string> visitedTemplateNames;
@@ -393,11 +397,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    var expression = ExpressionParser.Parse(exp);
+                    Expression expression = ExpressionParser.Parse(exp);
 
-                    if (!Path.IsPathRooted(templates.Id))
+                    //if (!Expressions.ContainsKey(exp))
+                    //{
+                    //    expression = ExpressionParser.Parse(exp);
+                    //    Expressions.Add(exp, expression);
+                    //}
+                    //else
+                    //{
+                    //    expression = Expressions[exp];
+                    //}
+
+                    if (templates.Id != "inline content")
                     {
-                        DebugSupport.SourceMap.Add(expression, new SourceRange(templates.Id, context.Start.Line, context.Start.Column, context.Stop.Line, context.Stop.Column));
+                        DebugSupport.SourceMap.Add(expression, new SourceRange(templates.Id, context.Start.Line, 0, context.Start.Line + 1, 0));
                     }
                 }
                 catch (Exception e)
