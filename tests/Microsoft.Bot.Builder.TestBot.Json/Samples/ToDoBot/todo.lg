@@ -21,7 +21,7 @@ ${join(foreach(user.groceryList, x, showSingleTodo(x)), '\n')}
     - Sorry, I can not get you.
 - ELSE IF: ${user.todos == null || count(user.todos) == 0}
     - You can Say "add a todo named first" to get started.
-- ELSE IF: ${count(user.todos) < 3}
+- ELSE IF: ${count(user.todos) < 2}
     - ${ShowTodo()}
 - ELSE:
 > error expression
