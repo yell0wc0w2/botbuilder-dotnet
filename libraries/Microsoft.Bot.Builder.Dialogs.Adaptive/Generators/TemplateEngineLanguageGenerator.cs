@@ -103,11 +103,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
+                else if (e is MessageArgs message && message.Source != "inline content")
+                {
+                    Console.WriteLine($"{message.Text}");
+                    var dda = turnContext.GetDebugger() as IDebugger;
+                    if (dda != null)
+                    {
+                        var task = dda.OutputAsync(message.Text, "message", message.Text, new System.Threading.CancellationToken());
+                        task.Wait();
+                    }
+                }
             };
 
             try
             {
-                return await Task.FromResult(lg.EvaluateText(template, data, onEvent).ToString());
+                var result = await Task.FromResult(lg.EvaluateText(template, data, onEvent).ToString());
+                return result;
             }
             catch (Exception err)
             {

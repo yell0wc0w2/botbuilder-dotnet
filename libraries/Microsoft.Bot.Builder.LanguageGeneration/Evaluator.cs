@@ -105,6 +105,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             EmitEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Source = TemplateMap[templateName].Source, TemplateName = templateName });
 
+            object result = null;
             var templateTarget = new EvaluationTarget(templateName, scope);
 
             var currentEvaluateId = templateTarget.GetId();
@@ -116,20 +117,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (!reExecute && previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
                 {
-                    return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                    result = previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
                 }
             }
-
-            // Using a stack to track the evaluation trace
-            evaluationTargetStack.Push(templateTarget);
-            var result = Visit(TemplateMap[templateName].ParseTree);
-            if (previousEvaluateTarget != null)
+            
+            if (result == null)
             {
-                previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
+                // Using a stack to track the evaluation trace
+                evaluationTargetStack.Push(templateTarget);
+                result = Visit(TemplateMap[templateName].ParseTree);
+                if (previousEvaluateTarget != null)
+                {
+                    previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
+                }
+
+                evaluationTargetStack.Pop();
             }
 
-            evaluationTargetStack.Pop();
-
+            EmitEvent("message", new MessageArgs { Source = TemplateMap[templateName].Source, Text = $"Evaluate template [{templateName}] get result: {result.ToString()}" });
             return result;
         }
 
@@ -470,7 +475,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
 
                     EmitEvent(expr, new BeginExpressionEvaluationArgs { Source = source, Expression = exp });
-                    return expr.TryEvaluate(scope);
+                    var result = expr.TryEvaluate(scope);
+                    EmitEvent("message", new MessageArgs { Source = TemplateMap[CurrentTarget().TemplateName].Source, Text = $"Evaluate expression '{exp}' get result: {result.value}" });
+                    return result;
                 }
             }
 
