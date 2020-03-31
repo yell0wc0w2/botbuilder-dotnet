@@ -20,9 +20,11 @@ ${join(foreach(user.groceryList, x, showSingleTodo(x)), '\n')}
     - You don't have any todos in grocery.
 
 # help
-- IF: ${1 == 2}
-- first
-- ELSE IF: ${2 == 3}
-- second
+- IF: ${user == null}
+  - Sorry, I can not get you.
+  - Maybe you should login to achieve the features.
+- ELSE IF: ${user.todos == null || count(user.todos) == 0}
+  - You can Say "add a todo named first" to get started.
+  - Add the first todo by saying "add a todo named first"
 - ELSE:
-- ${'third'}
+  - You have ${count(user.todos)} todos. Keep going!
