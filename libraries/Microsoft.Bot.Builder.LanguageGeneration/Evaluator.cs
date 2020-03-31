@@ -103,7 +103,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            EmitEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Source = TemplateMap[templateName].Source, TemplateName = templateName });
+            if (Path.IsPathRooted(TemplateMap[templateName].Source))
+            {
+                EmitEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Source = TemplateMap[templateName].Source, TemplateName = templateName });
+            }
 
             object result = null;
             var templateTarget = new EvaluationTarget(templateName, scope);
@@ -372,7 +375,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope, context);
 
             if (strictMode && (error != null || result == null))
             {
@@ -414,7 +417,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope, context);
 
             if (error != null || (result == null && strictMode))
             {
@@ -455,33 +458,43 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
-        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
+        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope, ParserRuleContext context)
         {
             if (evaluationTargetStack.Count > 0)
             {
                 var source = TemplateMap[CurrentTarget().TemplateName].Source;
 
-                if (source != "inline content")
+                if (Path.IsPathRooted(source) && context != null)
                 {
-                    Expression expr;
-
-                    if (StaticChecker.Expressions.ContainsKey(exp))
+                    var id = exp + context.Start.Line + source;
+                    if (StaticChecker.Expressions.ContainsKey(id))
                     {
-                        expr = StaticChecker.Expressions[exp];
+                        EmitEvent(StaticChecker.Expressions[id], new BeginExpressionEvaluationArgs { Source = source, Expression = exp });
                     }
-                    else
-                    {
-                        expr = this.ExpressionParser.Parse(exp);
-                    }
-
-                    EmitEvent(expr, new BeginExpressionEvaluationArgs { Source = source, Expression = exp });
-                    var result = expr.TryEvaluate(scope);
-                    EmitEvent("message", new MessageArgs { Source = TemplateMap[CurrentTarget().TemplateName].Source, Text = $"Evaluate expression '{exp}' get result: {result.value}" });
-                    return result;
                 }
             }
 
-            return this.ExpressionParser.Parse(exp).TryEvaluate(scope);
+            var expr = this.ExpressionParser.Parse(exp);
+            var result = expr.TryEvaluate(scope);
+
+            if (evaluationTargetStack.Count > 0)
+            {
+                var source = TemplateMap[CurrentTarget().TemplateName].Source;
+
+                if (Path.IsPathRooted(source))
+                {
+                    if (string.IsNullOrEmpty(result.error))
+                    {
+                        EmitEvent("message", new MessageArgs { Source = source, Text = $"Evaluate expression '{exp}' get result: {result.value}" });
+                    }
+                    else
+                    {
+                        EmitEvent("message", new MessageArgs { Source = source, Text = $"Evaluate expression '{exp}' get error: {result.error}" });
+                    }
+                }
+            }
+
+            return result;
         }
 
         // Generate a new lookup function based on one lookup function

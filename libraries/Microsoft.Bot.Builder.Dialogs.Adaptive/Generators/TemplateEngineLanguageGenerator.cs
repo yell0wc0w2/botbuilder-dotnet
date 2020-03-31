@@ -91,23 +91,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             EventHandler onEvent = (object sender, EventArgs e) =>
             {
-                if (e is BeginTemplateEvaluationArgs be && be.Source != "inline content")
+                if (e is BeginTemplateEvaluationArgs be && Path.IsPathRooted(be.Source))
                 {
                     Console.WriteLine($"Running into template {be.TemplateName} in {be.Source}");
                     var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
-                else if (e is BeginExpressionEvaluationArgs expr && expr.Source != "inline content")
+                else if (e is BeginExpressionEvaluationArgs expr && Path.IsPathRooted(expr.Source))
                 {
                     Console.WriteLine($"Running expression {expr.Expression} in {expr.Source}");
                     var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
-                else if (e is MessageArgs message && message.Source != "inline content")
+                else if (e is MessageArgs message && Path.IsPathRooted(message.Source))
                 {
                     Console.WriteLine($"{message.Text}");
-                    var dda = turnContext.GetDebugger() as IDebugger;
-                    if (dda != null)
+                    if (turnContext.GetDebugger() is IDebugger dda)
                     {
                         var task = dda.OutputAsync(message.Text, "message", message.Text, new System.Threading.CancellationToken());
                         task.Wait();

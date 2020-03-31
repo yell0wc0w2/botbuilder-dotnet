@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
 #pragma warning disable SA1401 // Fields should be private
-        public static Dictionary<string, Expression> Expressions = new Dictionary<string, Expression>();
+        public static Dictionary<string, ExpressionRef> Expressions = new Dictionary<string, ExpressionRef>();
 #pragma warning restore SA1401 // Fields should be private
 
         private readonly ExpressionParser baseExpressionParser;
@@ -397,25 +397,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    if (templates.Id != "inline content")
+                    ExpressionParser.Parse(exp);
+                    if (Path.IsPathRooted(templates.Id) && context != null)
                     {
-                        Expression expression;
-
-                        if (!Expressions.ContainsKey(exp))
+                        var expressionRef = new ExpressionRef(exp, context.Start.Line, templates.Id);
+                        DebugSupport.SourceMap.Add(expressionRef, new SourceRange(templates.Id, context.Start.Line, 0, context.Start.Line + 1, 0));
+                        var id = exp + context.Start.Line + templates.Id;
+                        if (!Expressions.ContainsKey(id))
                         {
-                            expression = ExpressionParser.Parse(exp);
-                            Expressions.Add(exp, expression);
+                            Expressions.Add(id, expressionRef);
                         }
-                        else
-                        {
-                            expression = Expressions[exp];
-                        }
-
-                        DebugSupport.SourceMap.Add(expression, new SourceRange(templates.Id, context.Start.Line, 0, context.Start.Line + 1, 0));
-                    }
-                    else
-                    {
-                        Expression expression = ExpressionParser.Parse(exp);
                     }
                 }
                 catch (Exception e)

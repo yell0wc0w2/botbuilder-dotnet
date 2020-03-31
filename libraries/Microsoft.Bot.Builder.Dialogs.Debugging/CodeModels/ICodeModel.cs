@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return $"template '{template.Name}'";
             }
 
-            if (item is Constant || item is Expression)
+            if (item is ExpressionRef exprRef)
             {
-                return item.ToString();
+                return $"expression '{exprRef}'";
             }
 
             var type = item.GetType().Name;
