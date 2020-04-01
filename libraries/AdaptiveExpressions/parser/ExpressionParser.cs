@@ -201,10 +201,12 @@ namespace AdaptiveExpressions
             public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
             {
                 var children = new List<Expression>();
+                var exprTxt = context.GetText();
                 foreach (var child in context.stringInterpolation().children)
                 {
                     if (child is ITerminalNode node)
                     {
+                        var childTxt = child.GetText();
                         switch (node.Symbol.Type)
                         {
                             case ExpressionAntlrParser.TEMPLATE:
@@ -213,6 +215,9 @@ namespace AdaptiveExpressions
                                 break;
                             case ExpressionAntlrParser.ESCAPE_CHARACTER:
                                 children.Add(Expression.ConstantExpression(EvalEscape(node.GetText().Replace("\\`", "`").Replace("\\$", "$"))));
+                                break;
+                            case ExpressionAntlrParser.OBJECT_DEFINITION:
+                                children.Add(Expression.ConstantExpression(node.GetText()));
                                 break;
                             default:
                                 break;
@@ -229,20 +234,33 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
-            public override Expression VisitConstantAtom([NotNull] ExpressionAntlrParser.ConstantAtomContext context)
+            public override Expression VisitJsonCreationExp([NotNull] ExpressionAntlrParser.JsonCreationExpContext context)
             {
-                var text = context.GetText();
-                if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
+                var emptyJObject = new JObject();
+                var expr = Expression.ConstantExpression(emptyJObject);
+                if (context.keyValuePairList() != null)
                 {
-                    return Expression.ConstantExpression(new JArray());
+                    foreach (var kvPair in context.keyValuePairList().keyValuePair())
+                    {
+                        var key = string.Empty;
+                        var keyNode = kvPair.key().children[0];
+                        if (keyNode is ITerminalNode node)
+                        {
+                            if (node.Symbol.Type == ExpressionAntlrParser.IDENTIFIER)
+                            {
+                                key = node.GetText();
+                            }
+                            else
+                            {
+                                key = node.GetText().Substring(1, node.GetText().Length - 2);
+                            }
+                        }
+
+                        expr = MakeExpression(ExpressionType.SetProperty, expr, Expression.ConstantExpression(key), Visit(kvPair.expression()));
+                    }
                 }
 
-                if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
-                {
-                    return Expression.ConstantExpression(new JObject());
-                }
-
-                throw new Exception($"Unrecognized constant: {text}");
+                return expr;
             }
 
             private Expression MakeExpression(string functionType, params Expression[] children)

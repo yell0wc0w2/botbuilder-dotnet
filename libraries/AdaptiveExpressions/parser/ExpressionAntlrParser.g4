@@ -18,20 +18,20 @@ expression
     ;
  
 primaryExpression 
-    : OPEN_BRACKET expression CLOSE_BRACKET                                  #parenthesisExp
-    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                     #arrayCreationExp
-    | CONSTANT                                                               #constantAtom
-    | NUMBER                                                                 #numericAtom
-    | STRING                                                                 #stringAtom
-    | IDENTIFIER                                                             #idAtom
-    | stringInterpolation                                                    #stringInterpolationAtom
-    | primaryExpression DOT IDENTIFIER                                       #memberAccessExp
-    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET            #funcInvokeExp
-    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET  #indexAccessExp
+    : OPEN_BRACKET expression CLOSE_BRACKET                                    #parenthesisExp
+    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                       #arrayCreationExp
+    | OPEN_CURLY_BRACKET (keyValuePairList | expression)? CLOSE_CURLY_BRACKET  #jsonCreationExp
+    | NUMBER                                                                   #numericAtom
+    | STRING                                                                   #stringAtom
+    | IDENTIFIER                                                               #idAtom
+    | stringInterpolation                                                      #stringInterpolationAtom
+    | primaryExpression DOT IDENTIFIER                                         #memberAccessExp
+    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET              #funcInvokeExp
+    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET    #indexAccessExp
     ;
 
 stringInterpolation
-    : STRING_INTERPOLATION_START (ESCAPE_CHARACTER | TEMPLATE | textContent)+ STRING_INTERPOLATION_START
+    : STRING_INTERPOLATION_START (ESCAPE_CHARACTER | TEMPLATE | textContent | OBJECT_DEFINITION)+ STRING_INTERPOLATION_START
     ;
 
 textContent
@@ -40,4 +40,16 @@ textContent
 
 argsList
     : expression (COMMA expression)*
+    ;
+
+keyValuePairList
+    : keyValuePair (COMMA keyValuePair)*
+    ;
+
+keyValuePair
+    : key COLON expression
+    ;
+
+key
+    : (IDENTIFIER | STRING)
     ;

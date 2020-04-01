@@ -2897,6 +2897,7 @@ namespace AdaptiveExpressions
                             {
                                 if (arg != null)
                                 {
+                                    var temp = arg.ToString();
                                     builder.Append(arg.ToString());
                                 }
                             }
@@ -3823,7 +3824,15 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Json, 
+                    Apply(args =>
+                        {
+                        var result = JToken.Parse(args[0]);
+                        return result;
+                        }), 
+                    ReturnType.Object, 
+                    (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
