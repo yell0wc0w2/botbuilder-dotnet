@@ -47,6 +47,7 @@ namespace AdaptiveExpressions.Tests
             { "one", 1.0 },
             { "two", 2.0 },
             { "hello", "hello" },
+            { "newExpr", "new land" },
             { "world", "world" },
             { "cit", "cit" },
             { "y", "y" },
@@ -278,20 +279,20 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region string interpolation test
-            //Test("`hi`", "hi"),
-            //Test(@"`hi\``", "hi`"),
-            //Test("`${world}`", "world"),
-            //Test(@"`hi ${string('jack`')}`", "hi jack`"),
-            //Test(@"`\${world}`", "${world}"), // use escape character
-            //Test("length(`hello ${world}`)", "hello world".Length),
-            //Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
-            //Test("`hello ${world}` == 'hello world'", true),
-            //Test("`hello ${world}` != 'hello hello'", true),
-            //Test("`hello ${user.nickname}` == 'hello John'", true),
-            //Test("`hello ${user.nickname}` != 'hello Dong'", true),
-            //Test("`hi\\`[1,2,3]`", "hi`[1,2,3]"),
-            //Test("`hi ${join([\'jack\\`\', \'queen\', \'king\'], ',')}`", "hi jack\\`,queen,king"),
-            Test("json(`{'foo':'${{text:'hello'}}','item':'${world}'}`).foo", "hello"),
+            Test("`hi`", "hi"),
+            Test(@"`hi\``", "hi`"),
+            Test("`${world}`", "world"),
+            Test(@"`hi ${string('jack`')}`", "hi jack`"),
+            Test(@"`\${world}`", "${world}"), // use escape character
+            Test("length(`hello ${world}`)", "hello world".Length),
+            Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
+            Test("`hello ${world}` == 'hello world'", true),
+            Test("`hello ${world}` != 'hello hello'", true),
+            Test("`hello ${user.nickname}` == 'hello John'", true),
+            Test("`hello ${user.nickname}` != 'hello Dong'", true),
+            Test("`hi\\`[1,2,3]`", "hi`[1,2,3]"),
+            Test("`hi ${join([\'jack\\`\', \'queen\', \'king\'], ',')}`", "hi jack\\`,queen,king"),
+            Test("json(`{'foo':${{text:'hello'}},'item':'${world}'}`).foo.text", "hello"),
             #endregion
 
             #region SetPathToProperty test
@@ -595,6 +596,7 @@ namespace AdaptiveExpressions.Tests
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("{a: 1, b: newExpr}.b", "new land"),
             #endregion
 
             #region  Math functions test
@@ -785,13 +787,22 @@ namespace AdaptiveExpressions.Tests
 
             #region  Object manipulation and construction functions
             Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
+            Test("string(addProperty({key1:\"value1\"}, 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(setProperty({key1:\"value1\"}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(setProperty({}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(setProperty({}, 'key1','value2{}'))", "{\"key1\":\"value2{}\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
+            Test("string([{a: 1}, {b: 2}, {c: 3}][0])", "{\"a\":1}"),
+            Test("string({obj: {\"name\": \"adams\"}})", "{\"obj\":{\"name\":\"adams\"}}"),
+            Test("string({obj: {name: \"adams\"}})", "{\"obj\":{\"name\":\"adams\"}}"),
+            Test("string({obj: {\"name\": \"adams\"}, txt: {utter: \"hello\"}})", "{\"obj\":{\"name\":\"adams\"},\"txt\":{\"utter\":\"hello\"}}"),
             Test("coalesce(nullObj,hello,nullObj)", "hello"),
             Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>" }),
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
+            Test("foreach(items, x, addProperty({}, 'a', x))[0].a", "zero"),
             #endregion
 
             #region  Memory access

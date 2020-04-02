@@ -236,8 +236,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitJsonCreationExp([NotNull] ExpressionAntlrParser.JsonCreationExpContext context)
             {
-                var emptyJObject = new JObject();
-                var expr = Expression.ConstantExpression(emptyJObject);
+                var expr = MakeExpression(ExpressionType.Json, new Constant("{}"));
                 if (context.keyValuePairList() != null)
                 {
                     foreach (var kvPair in context.keyValuePairList().keyValuePair())
