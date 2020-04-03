@@ -3846,7 +3846,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                newJobj[prop] = args[2];
+                                newJobj[prop] = JToken.FromObject(args[2]);
                             }
 
                             return (newJobj, error);
@@ -3858,7 +3858,7 @@ namespace AdaptiveExpressions
                     Apply(args =>
                         {
                             var newJobj = (JObject)args[0];
-                            newJobj[args[1].ToString()] = args[2];
+                            newJobj[args[1].ToString()] = JToken.FromObject(args[2]);
                             return newJobj;
                         }),
                     ReturnType.Object,

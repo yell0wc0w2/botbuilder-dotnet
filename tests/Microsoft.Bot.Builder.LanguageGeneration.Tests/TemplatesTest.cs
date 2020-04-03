@@ -593,9 +593,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = templates.Evaluate("template8");
             Assert.AreEqual(evaled, "{\"user\":{\"name\":\"Allen\"}}");
 
-            //var value = new { count = 13 };
-            //evaled = templates.Evaluate("template9", new { value });
-            //Assert.AreEqual(evaled, "{\"ctx\":{\"count\":13}}");
+            var value = new { count = 13 };
+            evaled = templates.Evaluate("template9", new { value });
+            Assert.AreEqual(evaled, "{\"ctx\":{\"count\":13}}");
 
             evaled = templates.Evaluate("template10");
             Assert.AreEqual(evaled, 13);
