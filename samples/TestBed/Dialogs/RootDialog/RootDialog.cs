@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples
             _lgFile = Templates.ParseFile(Path.Combine(".", "Dialogs", "RootDialog", "RootDialog.lg"));
             var rootDialog = new AdaptiveDialog("root")
             {
-                Generator = new TemplateEngineLanguageGenerator(_lgFile),
+                Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>()
                 {
                     new OnConversationUpdateActivity()
@@ -41,7 +41,28 @@ namespace Microsoft.BotBuilderSamples
                                 Property = "dialog.token.token",
                                 Value = "fooBar"
                             },
-                            new SendActivity("I have ${dialog.token} and ${dialog.token.token}")
+                            new SendActivity("Dialog A : I have ${dialog.token} and ${dialog.token.token}"),
+                            new BeginDialog()
+                            {
+                                Dialog = "child1",
+                                Options = new {
+                                    token = "=dialog.token"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var child1 = new AdaptiveDialog("child1")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Dialog B : I have ${dialog.token} and ${dialog.token.token}")
                         }
                     }
                 }
@@ -49,6 +70,7 @@ namespace Microsoft.BotBuilderSamples
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
             AddDialog(rootDialog);
+            AddDialog(child1);
 
             // The initial child dialog to run.
             InitialDialogId = "root";
