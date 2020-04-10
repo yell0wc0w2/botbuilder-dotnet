@@ -5,7 +5,10 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -22,55 +25,61 @@ namespace Microsoft.BotBuilderSamples
                 Generator = new TemplateEngineLanguageGenerator(),
                 Triggers = new List<OnCondition>()
                 {
-                    new OnConversationUpdateActivity()
-                    {
-                        Actions = WelcomeUserAction()
-                    },
                     new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {
-                            new SendActivity("Hello"),
-                            new SetProperty()
+                            new ChoiceInput()
                             {
-                                Property = "dialog.token",
-                                Value = "={}"
+                                Property = "user.choice",
+                                Choices = new ChoiceSet(new List<Choice>()
+                                {
+                                    new Choice()
+                                    {
+                                        Value = "foo",
+                                        Action = new CardAction()
+                                        {
+                                            Type = "imBack",
+                                            Title = "Amazing foo",
+                                            DisplayText = "Amazing foo was clicked"
+                                        }
+                                    },
+                                    new Choice()
+                                    {
+                                        Value = "bar",
+                                        Action = new CardAction()
+                                        {
+                                            Type = "imBack",
+                                            Title = "Amazing bar",
+                                            DisplayText = "Amazing bar was clicked"
+                                        }
+                                    }
+                                })
                             },
-                            new SetProperty()
-                            {
-                                Property = "dialog.token.token",
-                                Value = "fooBar"
-                            },
-                            new SendActivity("Dialog A : I have ${dialog.token} and ${dialog.token.token}"),
-                            new BeginDialog()
-                            {
-                                Dialog = "child1",
-                                Options = new {
-                                    token = "=dialog.token"
-                                }
-                            }
+                            new SendActivity("I have ${user.choice}")
                         }
                     }
                 }
             };
 
-            var child1 = new AdaptiveDialog("child1")
-            {
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("Dialog B : I have ${dialog.token} and ${dialog.token.token}")
-                        }
-                    }
-                }
-            };
+            // var child1 = new AdaptiveDialog("child1")
+            // {
+            //     Triggers = new List<OnCondition>()
+            //     {
+            //         new OnBeginDialog()
+            //         {
+            //             Actions = new List<Dialog>()
+            //             {
+            //                 new SendActivity("Dialog B : I have ${dialog.token} and ${dialog.token.token}")
+            //             }
+            //         }
+            //     }
+            // };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
             AddDialog(rootDialog);
-            AddDialog(child1);
+            
+            // AddDialog(child1);
 
             // The initial child dialog to run.
             InitialDialogId = "root";
