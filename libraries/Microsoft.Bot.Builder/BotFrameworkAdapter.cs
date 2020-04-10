@@ -47,24 +47,10 @@ namespace Microsoft.Bot.Builder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private static readonly HttpClient DefaultHttpClient = new HttpClient();
-
-        private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
-
-        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
-        private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
-
-        // There is a significant boost in throughput if we reuse a connectorClient
-        // _connectorClients is a cache using [serviceUrl + appId].
-        private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
-
-        // Cache for OAuthClient to speed up OAuth operations
-        // _oAuthClients is a cache using [appId + oAuthCredentialAppId]
-        private readonly ConcurrentDictionary<string, OAuthClient> _oAuthClients = new ConcurrentDictionary<string, OAuthClient>();
+        private readonly ClientManager _clientManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -121,8 +107,6 @@ namespace Microsoft.Bot.Builder
         {
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
-            _httpClient = customHttpClient ?? DefaultHttpClient;
-            _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
 
@@ -135,9 +119,6 @@ namespace Microsoft.Bot.Builder
             // This will only occur on activities from teams that include tenant info in channelData but NOT in conversation,
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
-
-            // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
         /// <summary>
@@ -283,7 +264,7 @@ namespace Microsoft.Bot.Builder
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId),
             });
 
-            var audience = GetBotFrameworkOAuthScope();
+            var audience = _clientManager.GetBotFrameworkOAuthScope();
 
             await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
@@ -310,7 +291,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            var audience = GetBotFrameworkOAuthScope();
+            var audience = _clientManager.GetBotFrameworkOAuthScope();
 
             await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
@@ -441,7 +422,7 @@ namespace Microsoft.Bot.Builder
                 string scope;
                 if (!SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
-                    scope = GetBotFrameworkOAuthScope();
+                    scope = _clientManager.GetBotFrameworkOAuthScope();
                 }
                 else
                 {
@@ -1414,123 +1395,7 @@ namespace Microsoft.Bot.Builder
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
-        /// <summary>
-        /// Creates the connector client asynchronous.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="claimsIdentity">The claims claimsIdentity.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>ConnectorClient instance.</returns>
-        /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken = default)
-        {
-            if (claimsIdentity == null)
-            {
-                throw new NotSupportedException("ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.");
-            }
-
-            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
-            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
-            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
-            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
-            if (botAppIdClaim == null)
-            {
-                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
-            }
-
-            // For anonymous requests (requests with no header) appId is not set in claims.
-            AppCredentials appCredentials = null;
-            if (botAppIdClaim != null)
-            {
-                var botId = botAppIdClaim.Value;
-                var scope = audience;
-
-                if (string.IsNullOrWhiteSpace(audience))
-                {
-                    // The skill connector has the target skill in the OAuthScope.
-                    scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ?
-                        JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) :
-                        GetBotFrameworkOAuthScope();
-                }
-
-                appCredentials = await GetAppCredentialsAsync(botId, scope, cancellationToken).ConfigureAwait(false);
-            }
-
-            return CreateConnectorClient(serviceUrl, appCredentials);
-        }
-
-        /// <summary>
-        /// Creates the connector client.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="appCredentials">The application credentials for the bot.</param>
-        /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
-        {
-            // As multiple bots can listen on a single serviceUrl, the clientKey also includes the OAuthScope.
-            var clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId}:{appCredentials?.OAuthScope}";
-
-            return _connectorClients.GetOrAdd(clientKey, (key) =>
-            {
-                ConnectorClient connectorClient;
-                if (appCredentials != null)
-                {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
-                }
-                else
-                {
-                    var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
-                        MicrosoftGovernmentAppCredentials.Empty :
-                        MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
-                }
-
-                if (_connectorClientRetryPolicy != null)
-                {
-                    connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
-                }
-
-                return connectorClient;
-            });
-        }
-
-        /// <summary>
-        /// Gets the application credentials. App credentials are cached to avoid refreshing the
-        /// token each time.
-        /// </summary>
-        /// <param name="appId">The application identifier (AAD ID for the bot).</param>
-        /// <param name="oAuthScope">The scope for the token. Skills use the skill's app ID. </param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>App credentials.</returns>
-        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope, CancellationToken cancellationToken = default)
-        {
-            if (appId == null)
-            {
-                return MicrosoftAppCredentials.Empty;
-            }
-
-            var cacheKey = $"{appId}{oAuthScope}";
-            if (_appCredentialMap.TryGetValue(cacheKey, out var appCredentials))
-            {
-                return appCredentials;
-            }
-
-            // If app credentials were provided, use them as they are the preferred choice moving forward
-            if (_appCredentials != null)
-            {
-                // Cache the credentials for later use
-                _appCredentialMap[cacheKey] = _appCredentials;
-                return _appCredentials;
-            }
-
-            // Credentials not found in cache, build them
-            appCredentials = await BuildCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
-
-            // Cache the credentials for later use
-            _appCredentialMap[cacheKey] = appCredentials;
-            return appCredentials;
-        }
-
+        
         /// <summary>
         /// Gets the AppId of the Bot out of the TurnState.
         /// </summary>
@@ -1554,13 +1419,24 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// This method returns the correct Bot Framework OAuthScope for AppCredentials.
+        /// Gets the AppId of the Skill Host out of the TurnState.
         /// </summary>
-        private string GetBotFrameworkOAuthScope()
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <returns>Skill Host's AppId.</returns>
+        private string GetSkillHostAppId(ITurnContext turnContext)
         {
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ?
-                GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
-                AuthenticationConstants.ToChannelFromBotOAuthScope;
+            string appId = null;
+            var botIdentity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
+            if (botIdentity != null)
+            {
+                appId = botIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+                if (string.IsNullOrWhiteSpace(appId))
+                {
+                    throw new InvalidOperationException("Unable to get the bot AppId from the audience claim.");
+                }
+            }
+
+            return appId;
         }
 
         /// <summary>

@@ -821,6 +821,11 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        public Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Enqueue(Activity activity)
         {
             lock (_activeQueueLock)
