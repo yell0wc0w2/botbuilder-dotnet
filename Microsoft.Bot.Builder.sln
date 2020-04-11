@@ -185,6 +185,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Pare
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Child", "tests\Skills\Child\Child.csproj", "{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed", "samples\TestBed\TestBed.csproj", "{2CC9C0D4-4AAC-4491-8752-4E73C1831191}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed-Declarative", "samples\TestBed-Declarative\TestBed-Declarative.csproj", "{EDBE5259-3453-48ED-A518-D49E90D47476}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -745,6 +749,22 @@ Global
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC9C0D4-4AAC-4491-8752-4E73C1831191}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBE5259-3453-48ED-A518-D49E90D47476}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
