@@ -476,7 +476,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var activity = MapAnswerToActivity(response.First().Answer);
+                await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -492,6 +493,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             return await stepContext.EndDialogAsync().ConfigureAwait(false);
+        }
+        
+        private virtual IActivity MapAnswerToActivity(QueryResult.Answer answer)
+        {
+            var activity = new Activity();
+            if(answer != null)
+            {
+            activity.Text = answer.text;
+            }
+            return activity;
         }
 
         internal class ValueProperty
