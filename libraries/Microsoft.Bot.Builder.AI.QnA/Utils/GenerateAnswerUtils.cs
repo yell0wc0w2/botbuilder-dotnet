@@ -139,11 +139,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 options.StrictFilters = new Metadata[] { };
             }
 
-            if (options.MetadataBoost == null)
-            {
-                options.MetadataBoost = new Metadata[] { };
-            }
-
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
@@ -176,11 +171,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
                 }
 
-                if (queryOptions.MetadataBoost?.Length > 0)
-                {
-                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
-                }
-
+               
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
@@ -199,8 +190,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 {
                     question = messageActivity.Text,
                     top = options.Top,
-                    strictFilters = options.StrictFilters,
-                    metadataBoost = options.MetadataBoost,
+                    strictFilters = options.StrictFilters,                   
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
@@ -225,8 +215,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
+                StrictFilters = options.StrictFilters,               
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
