@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -67,34 +68,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         [TestMethod]
         public void TemplatesInputs()
         {
-            var enTemplates = Templates.ParseText("[import](1.lg)\r\n # template\r\n - hi", "abc", ConstantResolver);
+            var enTemplates = Templates.ParseText("[import](1.lg)\r\n # t\r\n - hi", "abc", AssemblyResolver);
+            var deTemplates = Templates.ParseText("# template\r\n - de result.");
+
             var templatesDict = new Dictionary<string, Templates>
             {
                 { "en", enTemplates },
+                { "de", deTemplates },
             };
 
-            var generator = new MultiLanguageLG(templatesDict, "en");
+            var generator = new MultiLanguageLG(templatesDict, "de");
 
-            // fallback to "c.en.lg"
-            var result = generator.Generate("myTemplate", null, "en-us");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            // fallback to locale "en" 
+            var result = generator.Generate("template", null, "en-us");
+            Assert.AreEqual("this is a template from dll.", result);
 
-            // "c.en.lg" is used
-            result = generator.Generate("myTemplate", null, "en");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            // locale "en" is used
+            result = generator.Generate("template", null, "en");
+            Assert.AreEqual("this is a template from dll.", result);
 
-            // locale "fr" has no entry file, default file "c.en.lg" is used
-            result = generator.Generate("myTemplate", null, "fr");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            // locale "fr" has no entry file, locale "de" is used
+            result = generator.Generate("template", null, "fr");
+            Assert.AreEqual("de result.", result);
 
-            // "c.en.lg" is used
-            result = generator.Generate("myTemplate", null, null);
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            // default locale ""
+            result = generator.Generate("template", null, null);
+            Assert.AreEqual("de result.", result);
         }
 
-        private static (string content, string id) ConstantResolver(string sourceId, string resourceId)
+        private static (string content, string id) AssemblyResolver(string sourceId, string resourceId)
         {
-            return ($"# myTemplate\r\n - content with id: {resourceId} from source: {sourceId}", sourceId + resourceId);
+            var content = string.Empty;
+            var assemblyPath = Path.Combine(AppContext.BaseDirectory, "ConsoleApp1.dll");
+            var assembly = Assembly.LoadFile(assemblyPath);
+            using (var sr = new StreamReader(assembly.GetManifestResourceStream("ConsoleApp1.1.lg")))
+            {
+                content = sr.ReadToEnd();
+            }
+
+            return (content, sourceId + resourceId);
         }
     }
 }

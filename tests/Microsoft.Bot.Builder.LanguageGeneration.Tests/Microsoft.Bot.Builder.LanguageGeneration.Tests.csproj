@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ConsoleApp1.dll" />
     <None Remove="Examples\EmptyArrayAndObject.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\1.lg" />
@@ -68,6 +69,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="ConsoleApp1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\1.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -233,6 +237,10 @@
     <Content Include="MultiLanguage\a.en.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ConsoleApp1.dll" />
   </ItemGroup>
 
   <ItemGroup>
