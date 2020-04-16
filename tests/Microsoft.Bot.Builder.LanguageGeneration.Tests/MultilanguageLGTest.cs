@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             result = generator.Generate("template", null, "fr");
             Assert.AreEqual("de result.", result);
 
-            // default locale ""
+            // default locale "en"
             result = generator.Generate("template", null, null);
             Assert.AreEqual("de result.", result);
         }
