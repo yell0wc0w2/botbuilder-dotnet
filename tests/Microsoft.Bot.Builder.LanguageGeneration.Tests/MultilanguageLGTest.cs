@@ -98,6 +98,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
         private static (string content, string id) AssemblyResolver(string sourceId, string resourceId)
         {
+            // assembly content:
+            // # template
+            // - this is a template from dll.
+
             var content = string.Empty;
             var assemblyPath = Path.Combine(AppContext.BaseDirectory, "ConsoleApp1.dll");
             var assembly = Assembly.LoadFile(assemblyPath);
