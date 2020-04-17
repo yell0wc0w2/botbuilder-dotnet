@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
@@ -32,6 +33,7 @@ namespace Microsoft.BotBuilderSamples
                             new ChoiceInput()
                             {
                                 Property = "user.choice",
+                                Prompt = new ActivityTemplate("What do you want?"),
                                 Choices = new ChoiceSet(new List<Choice>()
                                 {
                                     new Choice()
@@ -41,7 +43,8 @@ namespace Microsoft.BotBuilderSamples
                                         {
                                             Type = "imBack",
                                             Title = "Amazing foo",
-                                            DisplayText = "Amazing foo was clicked"
+                                            DisplayText = "Amazing foo was clicked",
+                                            Value = "foo"
                                         }
                                     },
                                     new Choice()
@@ -51,7 +54,8 @@ namespace Microsoft.BotBuilderSamples
                                         {
                                             Type = "imBack",
                                             Title = "Amazing bar",
-                                            DisplayText = "Amazing bar was clicked"
+                                            DisplayText = "Amazing bar was clicked",
+                                            Value = "bar"
                                         }
                                     }
                                 })

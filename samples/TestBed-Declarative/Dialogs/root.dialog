@@ -5,21 +5,31 @@
             "$kind": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "You said ${turn.activity.text}"
+                    "$kind": "Microsoft.ChoiceInput",
+                    "property": "user.choice",
+                    "prompt": "Pick one",
+                    "choices": [
+                        {
+                            "value": "foo",
+                            "action": {
+                                "type": "imBack",
+                                "title": "Amazing foo",
+                                "value": "foo"
+                            }
+                        },
+                        {
+                            "value": "bar",
+                            "action": {
+                                "type": "imBack",
+                                "title": "Amazing bar",
+                                "value": "bar"
+                            }
+                        }
+                    ]
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "I have ${settings.qna}"
-                },
-                {
-                    "$kind": "Microsoft.QnAMakerDialog",
-                    "knowledgeBaseId": "=settings.qna.knowledgebaseid",
-                    "endpointKey": "=settings.qna.endpointkey",
-                    "hostname": "=settings.qna.hostname",
-                    "noAnswer": "Sorry, I did not find an answer.",
-                    "threshold": "0.3",
-                    "top": "3"
+                    "activity":  "I have ${user.choice}"
                 }
             ]
         }
