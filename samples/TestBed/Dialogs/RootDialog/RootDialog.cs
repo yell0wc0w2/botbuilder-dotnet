@@ -16,10 +16,18 @@ namespace Microsoft.BotBuilderSamples
     public class RootDialog : ComponentDialog
     {
         private Templates _lgFile;
-
+        private Templates _lgText;
         public RootDialog()
             : base(nameof(RootDialog))
-        {
+        {   
+            string lgContentId = "rootDialog";
+            string lgContent = @"# greeting
+- hi
+- hello";
+            _lgText = Templates.ParseText(lgContent, lgContentId);
+            var data = null;
+            var evalTemplate = _lgText.Evaluate("greeting", var);
+            var evalString = _lgText.Evaluate("${greeting()}", var);
             _lgFile = Templates.ParseFile(Path.Combine(".", "Dialogs", "RootDialog", "RootDialog.lg"));
             var rootDialog = new AdaptiveDialog("root")
             {
