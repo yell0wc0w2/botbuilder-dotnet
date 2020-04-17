@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -16,10 +17,27 @@ namespace Microsoft.BotBuilderSamples
     public class RootDialog : ComponentDialog
     {
         private Templates _lgFile;
+        private Templates _lgText;
 
         public RootDialog()
             : base(nameof(RootDialog))
         {
+            var lgContent = @"
+# greetUser
+- ${greeting()}, ${userName}
+
+# greeting
+- hi
+- hello";
+            _lgText = Templates.ParseText(lgContent, nameof(RootDialog));
+            var data = new
+            {
+                userName = "vishwac"
+            };
+            var templateEval = _lgText.Evaluate("greetUser", data);
+            Activity myActivity = ActivityFactory.FromObject(templateEval);
+            var stringEval = _lgText.EvaluateText("Text evaluation: ${greeting()}, ${userName}", data);
+
             _lgFile = Templates.ParseFile(Path.Combine(".", "Dialogs", "RootDialog", "RootDialog.lg"));
             var rootDialog = new AdaptiveDialog("root")
             {
