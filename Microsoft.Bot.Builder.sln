@@ -179,13 +179,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skills", "Skills", "{54DA83
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Parent\Parent.csproj", "{7F8ED2E7-A4BE-4855-BAF2-95657220E419}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{5A0DCC16-6C6F-4D24-8A2F-9A213D386BB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{5A0DCC16-6C6F-4D24-8A2F-9A213D386BB9}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Child", "tests\Skills\Child\Child.csproj", "{07E06B04-B4D4-4FD6-BD6C-FA54B6F06126}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Child", "tests\Skills\Child\Child.csproj", "{07E06B04-B4D4-4FD6-BD6C-FA54B6F06126}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Microsoft.Bot.Builder.FunctionalTests", "FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj", "{0E770DA2-D4B1-4D2D-9A02-6B69A8B54AE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.FunctionalTests", "FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj", "{0E770DA2-D4B1-4D2D-9A02-6B69A8B54AE2}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "TestBed-Declarative", "samples\TestBed-Declarative\TestBed-Declarative.csproj", "{BCDFA0E1-3E35-4B15-8F60-6A72A17D1D76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed-Declarative", "samples\TestBed-Declarative\TestBed-Declarative.csproj", "{BCDFA0E1-3E35-4B15-8F60-6A72A17D1D76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed", "samples\TestBed\TestBed.csproj", "{A34ECF72-923F-4A5E-9144-FDD444AAFF79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -755,6 +757,14 @@ Global
 		{BCDFA0E1-3E35-4B15-8F60-6A72A17D1D76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BCDFA0E1-3E35-4B15-8F60-6A72A17D1D76}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{BCDFA0E1-3E35-4B15-8F60-6A72A17D1D76}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{A34ECF72-923F-4A5E-9144-FDD444AAFF79}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
