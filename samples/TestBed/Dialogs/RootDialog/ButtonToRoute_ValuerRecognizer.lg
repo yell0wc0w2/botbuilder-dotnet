@@ -1,0 +1,4 @@
+﻿# ButtonForIntent
+[Activity
+    Attachments = ${json(fromFile('./ButtonToRoute_ValueRecognizer.json'))}
+]

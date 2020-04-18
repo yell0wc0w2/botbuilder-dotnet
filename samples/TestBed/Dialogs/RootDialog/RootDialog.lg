@@ -1,1 +1,4 @@
-﻿
+﻿# ButtonForIntent
+[Activity
+    Attachments = ${json(fromFile('./ButtonToRoute.json'))}
+]

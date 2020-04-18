@@ -18,7 +18,7 @@ namespace Microsoft.BotBuilderSamples
         private Templates _lgTemplates;
 
         public RootDialogQnA()
-            : base(nameof(RootDialog))
+            : base(nameof(ButtonToRoute_ValueRecognizer))
         {
             var childDialog = new AdaptiveDialog("child")
             {
