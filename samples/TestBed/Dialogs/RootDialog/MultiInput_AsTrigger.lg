@@ -1,0 +1,24 @@
+﻿# ButtonForIntent
+[Activity
+    Attachments = ${json(fromFile('./ButtonToRoute_Trigger.json'))}
+]
+
+# MultiProperty
+[Activity
+    Attachments = ${json(fromFile('./MultiInput_AsTrigger.json'))}
+]
+
+# MultiProperty.invalid(type)
+[Activity
+    Text = Sorry, **${this.value}** does not work. I'm looking for a ${invalidTypeBasedHelp(type)}.
+    ${MultiProperty()}
+]
+
+# invalidTypeBasedHelp(type)
+- Switch : ${type}
+    - CASE : ${'email'}
+        - valid email address.. e.g. info@contoso.com
+    - CASE : ${'age'}
+        - a number between 1 - 150
+    - DEFAULT :
+        - valid

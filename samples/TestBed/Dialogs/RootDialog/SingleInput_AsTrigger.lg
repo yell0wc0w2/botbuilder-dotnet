@@ -1,0 +1,15 @@
+﻿# ButtonForIntent
+[Activity
+    Attachments = ${json(fromFile('./ButtonToRoute_Trigger.json'))}
+]
+
+# SingleProperty
+[Activity
+    Attachments = ${json(fromFile('./SingleInput_AsTrigger.json'))}
+]
+
+# SingleProperty.invalid
+[Activity
+    Text = Sorry, **${this.value}** does not work. I'm looking for a valid email address.. e.g. info@contoso.com.
+    ${SingleProperty()}
+]

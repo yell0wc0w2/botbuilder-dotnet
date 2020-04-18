@@ -20,17 +20,23 @@
         {
           "type": "Action.Submit",
           "title": "Book flight",
-          "id": "BookFlight"
+          "data": {
+            "intent": "BookFlight"
+          }
         },
         {
           "type": "Action.Submit",
           "title": "Get weather",
-          "id": "GetWeather"
+          "data": {
+            "intent": "GetWeather"
+          }
         },
         {
           "type": "Action.Submit",
           "title": "See what I can do...",
-          "id": "None"
+          "data": {
+            "intent": "None"
+          }
         }
       ]
     }

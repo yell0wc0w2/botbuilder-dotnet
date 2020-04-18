@@ -5,19 +5,21 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.BotBuilderSamples
 {
-    public class ButtonToRoute_AsTrigger : ComponentDialog
+    public class SingleInput_AsTrigger : ComponentDialog
     {
         private Templates _lgFile;
 
-        public ButtonToRoute_AsTrigger()
-            : base(nameof(ButtonToRoute_AsTrigger))
+        public SingleInput_AsTrigger()
+            : base(nameof(SingleInput_AsTrigger))
         {
-            _lgFile = Templates.ParseFile(Path.Join(".", "Dialogs", "RootDialog", "ButtonToRoute_AsTrigger.lg"));
+            _lgFile = Templates.ParseFile(Path.Join(".", "Dialogs", "RootDialog", "SingleInput_AsTrigger.lg"));
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
                 Recognizer = new RegexRecognizer()
@@ -34,6 +36,10 @@ namespace Microsoft.BotBuilderSamples
                             Intent = "GetWeather",
                             Pattern = "weather"
                         }
+                    },
+                    Entities = new List<EntityRecognizer>()
+                    {
+                        new EmailEntityRecognizer()
                     }
                 },
                 Generator = new TemplateEngineLanguageGenerator(_lgFile),
@@ -66,23 +72,21 @@ namespace Microsoft.BotBuilderSamples
                         Intent = "BookFlight",
                         Actions = new List<Dialog>()
                         {
-                            new SendActivity("Picked up book flight intent.. Booking flight ...")
-                        }
-                    },
-                    new OnIntent()
-                    {
-                        Intent = "GetWeather",
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("Picked up get weather intent.. Getting you weather ....")
-                        }
-                    },
-                    new OnUnknownIntent()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("I'm a demo bot. I can book a flight or get weather information"),
-                            new SendActivity("${ButtonForIntent()}")
+                            new SendActivity("Picked up book flight intent.. Booking flight ..."),
+                            new TextInput()
+                            {
+                                Prompt = new ActivityTemplate("${SingleProperty()}"),
+                                Property = "user.email",
+                                
+                                // This enables you to rely on either the 'email' entity recognizer or the 'email' property from the card
+                                Value = "=coalesce(@email, turn.activity.value.email)",
+                                Validations = new List<string>()
+                                {
+                                    "isMatch(this.value, '^(([^<>()\\[\\]\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\"]+)*)|(\".+ \"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$')",
+                                },
+                                InvalidPrompt = new ActivityTemplate("${SingleProperty.invalid()}")
+                            },
+                            new SendActivity("Sure, I have your email as ${user.email}.")
                         }
                     },
                     new OnMessageActivity()
@@ -99,6 +103,22 @@ namespace Microsoft.BotBuilderSamples
                                 EventName = AdaptiveEvents.RecognizedIntent,
                                 EventValue = "=json(`{\"intent\", ${turn.activity.value.intent}}`)"
                             }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "GetWeather",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Picked up get weather intent.. Getting you weather ....")
+                        }
+                    },
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("I'm a demo bot. I can book a flight or get weather information"),
+                            new SendActivity("${ButtonForIntent()}")
                         }
                     }
                 }

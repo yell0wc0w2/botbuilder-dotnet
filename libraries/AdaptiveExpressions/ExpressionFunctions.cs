@@ -2567,6 +2567,12 @@ namespace AdaptiveExpressions
                 return args[1] == null;
             }
 
+            if ((args[0] != null && args[1] == null) ||
+                (args[0] == null && args[1] != null))
+            {
+                return false;
+            }
+
             if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
             {
                 return true;
