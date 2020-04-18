@@ -1,0 +1,48 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "type": "AdaptiveCard",
+  "speak": "",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Travel agent bot",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Enter your email address",
+      "separator": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Enter your email id...",
+      "id": "email",
+      "style": "Url",
+      "value": "${coalesce(user.email, '')}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Enter your age",
+      "separator": true
+    },
+    {
+      "type": "Input.Number",
+      "placeholder": "Enter your age...",
+      "id": "number",
+      "value": "${user.age}"
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Submit",
+          "data": {
+            "intent":  "userProfileAdaptiveCardInput"
+          }
+        }
+      ]
+    }
+  ]
+}

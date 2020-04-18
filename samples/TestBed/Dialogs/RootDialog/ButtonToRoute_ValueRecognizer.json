@@ -1,0 +1,44 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "type": "AdaptiveCard",
+  "speak": "",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Travel agent bot",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": "What can I do for you today?",
+      "separator": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Book flight",
+          "data": {
+            "intent": "BookFlight"
+          }
+        },
+        {
+          "type": "Action.Submit",
+          "title": "Get weather",
+          "data": {
+            "intent": "GetWeather"
+          }
+        },
+        {
+          "type": "Action.Submit",
+          "title": "See what I can do...",
+          "data": {
+            "intent": "None"
+          }
+        }
+      ]
+    }
+  ]
+}
