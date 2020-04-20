@@ -380,6 +380,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
             Assert.AreEqual(evaled, "2");
+
+            evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
+            Assert.AreEqual(evaled, "you made it!");
         }
 
         [TestMethod]
@@ -422,7 +425,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            templates = Templates.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
+            templates = Templates.ParseText("[import](./6.lg)\r\n# basicTemplate\r\n- Hi\r\n- Hello\r\n", GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, templates.AllTemplates.Count());
             evaled = templates.Evaluate("basicTemplate", null).ToString();
