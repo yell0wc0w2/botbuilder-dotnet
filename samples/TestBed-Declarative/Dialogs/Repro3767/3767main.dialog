@@ -1,0 +1,40 @@
+{
+    "$schema": "../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "generator": "3767main.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "Test",
+                "pattern": "test"
+            }
+        ]
+    },
+    "triggers": [
+        {
+          "$kind": "Microsoft.OnConversationUpdateActivity",
+          "actions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "${WelcomeUser()}"
+            }
+          ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "Test",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "3767child"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${LgBug()}"
+                }
+            ]
+        }
+    ]
+}

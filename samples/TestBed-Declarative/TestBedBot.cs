@@ -51,7 +51,7 @@ namespace Microsoft.BotBuilderSamples
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
 
-            var resource = this.resourceExplorer.GetResource("root.dialog");
+            var resource = this.resourceExplorer.GetResource("3767main.dialog");
             _dialogManager = new DialogManager(this.resourceExplorer.LoadType<AdaptiveDialog>(resource));
             _dialogManager.UseResourceExplorer(this.resourceExplorer);
             _dialogManager.UseLanguageGeneration();

@@ -1,0 +1,15 @@
+{
+    "$schema": "../../app.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "child.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        }
+    ]
+}

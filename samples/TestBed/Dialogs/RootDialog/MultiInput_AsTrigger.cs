@@ -143,7 +143,7 @@ namespace Microsoft.BotBuilderSamples
                     // Adaptive card does not support the concept of 'disabled' so this still would not work if the user messes up email id while being prompted for age (after accepting a valid email).
                     new OnMessageActivity()
                     {
-                        Condition = "turn.activity.text == null && turn.activity.value != null && turn.activity.value.intent == 'userProfileAdaptiveCardInput'"
+                        Condition = "turn.activity.text == null && turn.activity.value != null && turn.activity.value.intent == 'userProfileAdaptiveCardInput'",
                         Actions = new List<Dialog>()
                         {
                             new SendActivity("Setting values..."),

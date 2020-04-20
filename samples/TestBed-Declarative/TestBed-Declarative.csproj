@@ -7,6 +7,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DelaySign>false</DelaySign>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Dialogs\Repro3767\3767main.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Dialogs\Repro3767\3767main.dialog" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
