@@ -68,13 +68,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         [TestMethod]
         public void TemplatesInputs()
         {
-            var enTemplates = Templates.ParseText("[import](1.lg)\r\n # t\r\n - hi", "abc", AssemblyResolver);
-            var deTemplates = Templates.ParseText("# template\r\n - de result.");
-
             var templatesDict = new Dictionary<string, Templates>
             {
-                { "en", enTemplates },
-                { "de", deTemplates },
+                { "en", Templates.ParseText(GetAssemblyContent()) },
+                { "de", Templates.ParseText("# template\r\n - de result.") },
             };
 
             var generator = new MultiLanguageLG(templatesDict, "de");
@@ -96,7 +93,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             Assert.AreEqual("de result.", result);
         }
 
-        private static (string content, string id) AssemblyResolver(string sourceId, string resourceId)
+        private static string GetAssemblyContent()
         {
             // assembly content:
             // # template
@@ -110,7 +107,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
                 content = sr.ReadToEnd();
             }
 
-            return (content, sourceId + resourceId);
+            return content;
         }
     }
 }
