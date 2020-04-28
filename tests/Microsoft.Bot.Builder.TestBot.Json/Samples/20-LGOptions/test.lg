@@ -1,0 +1,10 @@
+> !# @replaceNull = ${path} is undefined  
+> !# @lineBreakStyle = markdown
+
+#greeting
+- Hi ${user.name}
+
+#MovieList
+-```
+Blade Runner 2049\nThe Martian\nGravity
+```

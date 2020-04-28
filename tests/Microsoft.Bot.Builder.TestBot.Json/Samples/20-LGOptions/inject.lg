@@ -1,0 +1,12 @@
+> !# @Namespace = foo
+> !# @Exports =  Compact
+
+
+# Convert(index, value)
+- ${setProperty(setProperty({}, "Id", index),"Topic",value)}
+
+#GetList(tasks)
+- ${indicesAndValues(tasks)}
+
+#Compact(tasks)
+-${select(indicesAndValues(tasks),iter,setProperty(setProperty({}, 'Id', iter.index),'Topic',iter.value))}

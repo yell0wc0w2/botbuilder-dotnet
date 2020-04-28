@@ -1,0 +1,120 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "$designer": {
+        "id": "288769",
+        "description": "",
+        "name": "optiondemo-0"
+      },
+    "autoEndDialog": false,
+    "generator": "test.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "id": "regex",
+        "intents": [
+          {
+            "intent": "Greeting",
+            "pattern": "(?i)hi"
+          },
+          {
+            "intent": "flatTasks",
+            "pattern": "(?i)my tasks"
+          },
+          {
+            "intent": "newFlatTasks",
+            "pattern": "(?i)all tasks"
+          },
+          {
+            "intent": "compactTasks",
+            "pattern": "(?i)list tasks"
+          },
+          {
+            "intent": "movieList",
+            "pattern": "(?i)movie list"
+          }
+        ]
+      },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+              {
+                "$kind": "Microsoft.SetProperty",
+                "$designer": {
+                  "id": "CTL1UI"
+                },
+                "property": "user.tasks",
+                "value": [ "car washing", "gasline", "grocery", "laundry" ]
+              },
+              {
+                "$kind": "Microsoft.SetProperty",
+                "$designer": {
+                  "id": "CTL1UI"
+                },
+                "property": "user.flatTasks",
+                "value": "=string(select(indicesAndValues(user.tasks),iter,setProperty(setProperty({}, 'Id', iter.index),'Topic',iter.value)))"
+              },
+              {
+                "$kind": "Microsoft.SetProperty",
+                "$designer": {
+                  "id": "CTL1UI"
+                },
+                "property": "user.compactTasks",
+                "value": "=string(foo.Compact(user.tasks))"
+              }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+              "id": "064505"
+            },
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${greeting()}"
+              }
+            ],
+            "intent": "Greeting"
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+              "id": "064505"
+            },
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${user.nestedTasks}"
+              }
+            ],
+            "intent": "newFlatTasks"
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+              "id": "064505"
+            },
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${user.compactTasks}"
+              }
+            ],
+            "intent": "compactTasks"
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+              "id": "064505"
+            },
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${MovieList()}"
+              }
+            ],
+            "intent": "movieList"
+        }
+    ]
+  }
