@@ -18,15 +18,11 @@
           },
           {
             "intent": "flatTasks",
-            "pattern": "(?i)my tasks"
-          },
-          {
-            "intent": "newFlatTasks",
-            "pattern": "(?i)all tasks"
+            "pattern": "(?i)expression tasks"
           },
           {
             "intent": "compactTasks",
-            "pattern": "(?i)list tasks"
+            "pattern": "(?i)export tasks"
           },
           {
             "intent": "movieList",
@@ -85,10 +81,10 @@
             "actions": [
               {
                 "$kind": "Microsoft.SendActivity",
-                "activity": "${user.nestedTasks}"
+                "activity": "${user.flatTasks}"
               }
             ],
-            "intent": "newFlatTasks"
+            "intent": "flatTasks"
         },
         {
             "$kind": "Microsoft.OnIntent",

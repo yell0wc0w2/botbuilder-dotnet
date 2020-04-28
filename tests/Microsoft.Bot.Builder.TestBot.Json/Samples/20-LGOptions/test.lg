@@ -1,4 +1,4 @@
-> !# @replaceNull = ${path} is undefined  
+> !# @replaceNull = ${path} is undefined
 > !# @lineBreakStyle = markdown
 
 #greeting
