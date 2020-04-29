@@ -46,9 +46,10 @@ namespace Microsoft.BotBuilderSamples
                     },
                     new OnUnknownIntent()
                     {
+                        Condition = "turn.activity.text != 'hello'",
                         Actions = new List<Dialog>()
                         {
-                            new SendActivity("In child .. unknown..You said '${turn.activity.text}'")
+                            new SendActivity("In child .. unknown..You said '${turn.activity.text}'. \n I will not trigger on 'hello'")
                         }
                     }
                 }
