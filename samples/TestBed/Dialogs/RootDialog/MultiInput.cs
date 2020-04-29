@@ -26,7 +26,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     Recognizers = new List<Recognizer>()
                     {
-                        new ValueRecognizer(),
+                        //new ValueRecognizer(),
                         new RegexRecognizer()
                         {
                             Intents = new List<IntentPattern>()
@@ -88,7 +88,7 @@ namespace Microsoft.BotBuilderSamples
                                 
                                 // This enables you to rely on either the 'email' entity recognizer or the 'email' property from the card
                                 Value = "=@email",
-                                Validations = new List<string>()
+                                Validations = new List<AdaptiveExpressions.Properties.BoolExpression>()
                                 {
                                     "isMatch(this.value, '^(([^<>()\\[\\]\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\"]+)*)|(\".+ \"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$')",
                                 },
@@ -101,7 +101,7 @@ namespace Microsoft.BotBuilderSamples
                                 
                                 // This enables you to rely on either the 'email' entity recognizer or the 'email' property from the card
                                 Value = "=@number",
-                                Validations = new List<string>()
+                                Validations = new List<AdaptiveExpressions.Properties.BoolExpression>()
                                 {
                                     "int(this.value) >= 1",
                                     "int(this.value) <= 150"

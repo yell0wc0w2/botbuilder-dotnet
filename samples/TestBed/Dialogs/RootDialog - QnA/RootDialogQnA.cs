@@ -6,7 +6,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
+
+//using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -352,19 +353,19 @@ namespace Microsoft.BotBuilderSamples
             };
         }
 
-        private static Recognizer QnARecognizer()
-        {
-            return new QnAMakerRecognizer()
-            {
-                Id = "Root_QnA",
-                HostName = "https://vk-test-qna.azurewebsites.net/qnamaker",
-                EndpointKey = "8e744f2e-2f80-4c16-bb68-7eb2a088726f",
-                KnowledgeBaseId = "206eab69-6573-4a8d-939b-63a1a2511d11",
-                Top = 10,
-                Context = "dialog.qnaContext",
-                QnAId = "turn.qnaIdFromPrompt"
-            };
-        }
+        // private static Recognizer QnARecognizer()
+        // {
+        //     return new QnAMakerRecognizer()
+        //     {
+        //         Id = "Root_QnA",
+        //         HostName = "https://vk-test-qna.azurewebsites.net/qnamaker",
+        //         EndpointKey = "8e744f2e-2f80-4c16-bb68-7eb2a088726f",
+        //         KnowledgeBaseId = "206eab69-6573-4a8d-939b-63a1a2511d11",
+        //         Top = 10,
+        //         Context = "dialog.qnaContext",
+        //         QnAId = "turn.qnaIdFromPrompt"
+        //     };
+        // }
 
         private static Recognizer MultiRecognizer()
         {
@@ -372,12 +373,12 @@ namespace Microsoft.BotBuilderSamples
             {
                 Recognizers = new List<Recognizer>()
                 {
-                    new ValueRecognizer(),
+                    //new ValueRecognizer(),
                     new CrossTrainedRecognizerSet()
                     {
                         Recognizers = new List<Recognizer>()
                         {
-                            QnARecognizer(),
+                            //QnARecognizer(),
                             GetLUISApp()
                         }
                     }

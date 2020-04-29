@@ -20,6 +20,7 @@ namespace Microsoft.BotBuilderSamples
             _lgFile = Templates.ParseFile(Path.Join(".", "Dialogs", "TestDialog", "TestDialog.lg"));
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
+                AutoEndDialog = false,
                 Generator = new TemplateEngineLanguageGenerator(_lgFile),
                 Recognizer = new RegexRecognizer()
                 {
@@ -27,23 +28,38 @@ namespace Microsoft.BotBuilderSamples
                     {
                         new IntentPattern()
                         {
-                            Intent = "test",
-                            Pattern = "test"
+                            Intent = "quit",
+                            Pattern = "quit"
                         }
                     }
                 },
                 Triggers = new List<OnCondition>()
                 {
-                    new OnIntent()
+                    new OnBeginDialog()
                     {
-                        Intent = "test",
                         Actions = new List<Dialog>()
                         {
+                            new SendActivity("Starting child dialog.. say 'back' to get back here. say 'quit' to quit"),
                             new BeginDialog()
                             {
-                                Dialog = "TestDialog2"
-                            },
-                            new SendActivity("${welcome()}")
+                                Dialog = nameof(TestDialog2)
+                            }
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "quit",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Ok. ending..."),
+                            new EndDialog()
+                        }
+                    },
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("In parent .. unknown..")
                         }
                     }
                 }

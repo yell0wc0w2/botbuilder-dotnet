@@ -24,7 +24,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     Recognizers = new List<Recognizer>()
                     {
-                        new ValueRecognizer(),
+                        //new ValueRecognizer(),
                         new RegexRecognizer()
                         {
                             Intents = new List<IntentPattern>()

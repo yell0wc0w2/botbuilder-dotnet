@@ -18,26 +18,44 @@ namespace Microsoft.BotBuilderSamples
             : base(nameof(TestDialog2))
         {
             _lgFile = Templates.ParseFile(Path.Join(".", "Dialogs", "TestDialog", "TestDialog2.lg"));
-            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            var testDialog2 = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
+                AutoEndDialog = false,
                 Generator = new TemplateEngineLanguageGenerator(_lgFile),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern()
+                        {
+                            Intent = "goBack",
+                            Pattern = "back"
+                        }
+                    }
+                },
                 Triggers = new List<OnCondition>()
                 {
-                    new OnBeginDialog()
+                    new OnIntent()
+                    {
+                        Intent = "goBack",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Sure, going back to master.."),
+                            new EndDialog()
+                        }
+                    },
+                    new OnUnknownIntent()
                     {
                         Actions = new List<Dialog>()
                         {
-                            //new SendActivity("${welcome()}"),
-                            new EndDialog()
+                            new SendActivity("In child .. unknown..You said '${turn.activity.text}'")
                         }
                     }
                 }
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
-            AddDialog(rootDialog);
-
-            // AddDialog(child1);
+            AddDialog(testDialog2);
 
             // The initial child dialog to run.
             InitialDialogId = nameof(AdaptiveDialog);
